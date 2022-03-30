@@ -1,0 +1,135 @@
+From b5cd614b6c12de4f23a12b94e02d76c9723ee01d Mon Sep 17 00:00:00 2001
+From: huytv <huybk213@gmail.com>
+Date: Mon, 7 Feb 2022 12:17:55 +0700
+Subject: [PATCH 6/7] update tcp get error no
+
+---
+ components/esp_http_client/esp_http_client.c    |  8 ++++++++
+ .../esp_http_client/include/esp_http_client.h   | 11 +++++++++++
+ components/tcp_transport/transport.c            | 17 +++++++++++++++++
+ components/tcp_transport/transport_ssl.c        | 14 ++++++++++++++
+ components/tcp_transport/transport_tcp.c        | 14 ++++++++++++++
+ 5 files changed, 64 insertions(+)
+
+diff --git a/components/esp_http_client/esp_http_client.c b/components/esp_http_client/esp_http_client.c
+index 9ae9011c0b..00774561b3 100644
+--- a/components/esp_http_client/esp_http_client.c
++++ b/components/esp_http_client/esp_http_client.c
+@@ -1267,6 +1267,14 @@ static esp_err_t esp_http_client_request_send(esp_http_client_handle_t client, i
+     return ESP_OK;
+ }
+ 
++int esp_http_client_get_errno(esp_http_client_handle_t client)
++{
++    if (client && client->transport) {
++        return esp_transport_get_errno(client->transport);
++    }
++    return ESP_FAIL;
++}
++
+ static esp_err_t esp_http_client_send_post_data(esp_http_client_handle_t client)
+ {
+     if (client->state != HTTP_STATE_REQ_COMPLETE_HEADER) {
+diff --git a/components/esp_http_client/include/esp_http_client.h b/components/esp_http_client/include/esp_http_client.h
+index e559b61939..94d869d13b 100644
+--- a/components/esp_http_client/include/esp_http_client.h
++++ b/components/esp_http_client/include/esp_http_client.h
+@@ -222,6 +222,17 @@ esp_err_t esp_http_client_perform(esp_http_client_handle_t client);
+  */
+ esp_err_t esp_http_client_set_url(esp_http_client_handle_t client, const char *url);
+ 
++/**
++* @brief    Get Current HTTP errno
++*
++* @param[in]  client  The client
++*
++* @return
++*   The current HTTP errno
++*   ESP_FAIL
++*/
++int esp_http_client_get_errno(esp_http_client_handle_t client);
++
+ /**
+  * @brief      Set post data, this function must be called before `esp_http_client_perform`.
+  *             Note: The data parameter passed to this function is a pointer and this function will not copy the data
+diff --git a/components/tcp_transport/transport.c b/components/tcp_transport/transport.c
+index f9b2b38a2c..9838074915 100644
+--- a/components/tcp_transport/transport.c
++++ b/components/tcp_transport/transport.c
+@@ -262,6 +262,23 @@ esp_err_t esp_transport_set_default_port(esp_transport_handle_t t, int port)
+     return ESP_OK;
+ }
+ 
++// int esp_transport_get_errno(esp_transport_handle_t t)
++// {
++//     if (t && t->_get_errno) {
++//         return t->_get_errno(t);
++//     }
++//     return ESP_FAIL;
++// }
++
++// esp_err_t esp_transport_set_get_errno_func(esp_transport_handle_t t, trans_func _get_errno_func)
++// {
++//     if (t == NULL) {
++//         return ESP_FAIL;
++//     }
++//     t->_get_errno = _get_errno_func;
++//     return ESP_OK;
++// }
++
+ esp_err_t esp_transport_set_async_connect_func(esp_transport_handle_t t, connect_async_func _connect_async_func)
+ {
+     if (t == NULL) {
+diff --git a/components/tcp_transport/transport_ssl.c b/components/tcp_transport/transport_ssl.c
+index 573782e64b..b2464d692b 100644
+--- a/components/tcp_transport/transport_ssl.c
++++ b/components/tcp_transport/transport_ssl.c
+@@ -294,6 +294,20 @@ void esp_transport_ssl_skip_common_name_check(esp_transport_handle_t t)
+     }
+ }
+ 
++static int esp_transport_ssl_get_errno(esp_transport_handle_t t)
++{
++    transport_ssl_t *ssl = esp_transport_get_context_data(t);
++    if ((ssl == NULL) || (ssl->tls == NULL)) {
++        ESP_LOGE(TAG, "tls connect failed");
++        return -1;
++    }
++    int sock_errno = 0;
++    uint32_t optlen = sizeof(sock_errno);
++    getsockopt(ssl->tls->sockfd, SOL_SOCKET, SO_ERROR, &sock_errno, &optlen);
++    ESP_LOGD(TAG, "[socket = %d] errno is %d\n", ssl->tls->sockfd, sock_errno);
++    return sock_errno;
++}
++
+ #ifdef CONFIG_ESP_TLS_USE_SECURE_ELEMENT
+ void esp_transport_ssl_use_secure_element(esp_transport_handle_t t)
+ {
+diff --git a/components/tcp_transport/transport_tcp.c b/components/tcp_transport/transport_tcp.c
+index d61626f4f1..a5f3e0b9a3 100644
+--- a/components/tcp_transport/transport_tcp.c
++++ b/components/tcp_transport/transport_tcp.c
+@@ -274,6 +274,20 @@ static esp_err_t tcp_destroy(esp_transport_handle_t t)
+     return 0;
+ }
+ 
++static int tcp_get_errno(esp_transport_handle_t t)
++{
++    transport_tcp_t *tcp = esp_transport_get_context_data(t);
++    if (tcp->sock < 2) {
++        ESP_LOGE(TAG, "tcp connect failed");
++        return -1;
++    }
++    int sock_errno = 0;
++    uint32_t optlen = sizeof(sock_errno);
++    getsockopt(tcp->sock, SOL_SOCKET, SO_ERROR, &sock_errno, &optlen);
++    ESP_LOGD(TAG, "[socket = %d] errno is %d\n", tcp->sock, sock_errno);
++    return sock_errno;
++}
++
+ static int tcp_get_socket(esp_transport_handle_t t)
+ {
+     if (t) {
+-- 
+2.35.1.windows.2
+

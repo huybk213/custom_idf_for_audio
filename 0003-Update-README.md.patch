@@ -1,0 +1,25 @@
+From 6a3fcdd1cda8e2d0fbff6dfc7013135c18c80bfc Mon Sep 17 00:00:00 2001
+From: huybk213 <huybk213@gmail.com>
+Date: Mon, 24 Jan 2022 23:31:06 +0700
+Subject: [PATCH 3/7] Update README.md
+
+---
+ README.md | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/README.md b/README.md
+index 307488454c..0bedc83229 100644
+--- a/README.md
++++ b/README.md
+@@ -11,7 +11,7 @@ HƯỚNG DẪN CÀI ĐẶT MÔI TRƯỜNG PHÁT TRIỂN FIRMWARE THIẾT BỊ FI
+ - Download SDK
+     + git clone --recurse-submodule https://YOUR_GIT_TOKEN@github.com/ByTechJSC/fire_safe_esp32_sdk
+ - Download ESP32 code
+-    + git clone -b feature/dev https://YOUR_GIT_TOKEN@github.com/ByTechJSC/FireSafe
++    + git clone -b origin/dev https://YOUR_GIT_TOKEN@github.com/ByTechJSC/FireSafe
+ - Cài đặt SDK
+     + cd /path/to/esp-idf
+     + ./install.sh
+-- 
+2.35.1.windows.2
+

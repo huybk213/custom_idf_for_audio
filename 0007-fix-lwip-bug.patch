@@ -1,0 +1,19 @@
+From 476d45a585584b6e6941076be15a131568abe73e Mon Sep 17 00:00:00 2001
+From: huybk213 <huybk213@gmail.com>
+Date: Wed, 30 Mar 2022 08:44:08 +0700
+Subject: [PATCH 7/7] fix lwip bug
+
+---
+ components/lwip/lwip | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/components/lwip/lwip b/components/lwip/lwip
+index 2195f7416f..966e419996 160000
+--- a/components/lwip/lwip
++++ b/components/lwip/lwip
+@@ -1 +1 @@
+-Subproject commit 2195f7416fb3136831babf3e96c027a73075bd4f
++Subproject commit 966e4199960ffe30d0838fc30cbf1bf13b8cdc47
+-- 
+2.35.1.windows.2
+

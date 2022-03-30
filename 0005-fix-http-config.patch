@@ -1,0 +1,25 @@
+From af253fc1dc8b4864183e256f5e314a4a191a087a Mon Sep 17 00:00:00 2001
+From: huytv <huybk213@gmail.com>
+Date: Mon, 7 Feb 2022 11:35:42 +0700
+Subject: [PATCH 5/7] fix http config
+
+---
+ components/esp_http_client/esp_http_client.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/components/esp_http_client/esp_http_client.c b/components/esp_http_client/esp_http_client.c
+index d82223778b..9ae9011c0b 100644
+--- a/components/esp_http_client/esp_http_client.c
++++ b/components/esp_http_client/esp_http_client.c
+@@ -1169,7 +1169,7 @@ static int http_client_prepare_first_line(esp_http_client_handle_t client, int w
+         http_header_set_format(client->request->headers, "Content-Length", "%d", write_len);
+     } else {
+         esp_http_client_set_header(client, "Transfer-Encoding", "chunked");
+-#if AUDIO_IP_SDK        // Loa phuong master dung http put de stream data thay vi http post
++#if CONFIG_AUDIO_IP_SDK        // Loa phuong master dung http put de stream data thay vi http post
+         esp_http_client_set_method(client, HTTP_METHOD_PUT);
+ #else
+         esp_http_client_set_method(client, HTTP_METHOD_POST);
+-- 
+2.35.1.windows.2
+
