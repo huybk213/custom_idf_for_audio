@@ -1,0 +1,2 @@
+Replace file fire_safe_esp32_sdk\components\esp_netif\include
+esp_netif_defaults.h
