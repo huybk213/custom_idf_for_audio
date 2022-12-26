@@ -34,7 +34,7 @@ extern "C" {
         .lost_ip_event = IP_EVENT_STA_LOST_IP, \
         .if_key = "WIFI_STA_DEF", \
         .if_desc = "sta", \
-        .route_prio = 20 \
+        .route_prio = 100 \
      }  \
 
 #define ESP_NETIF_INHERENT_DEFAULT_WIFI_AP() \
@@ -70,7 +70,7 @@ extern "C" {
         .lost_ip_event = IP_EVENT_PPP_LOST_IP,  \
         .if_key = "PPP_DEF",    \
         .if_desc = "ppp",   \
-        .route_prio = 100   \
+        .route_prio = 20   \
 };
 
 #define ESP_NETIF_INHERENT_DEFAULT_SLIP() \
